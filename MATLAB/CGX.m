@@ -10,12 +10,32 @@ classdef CGX
         function obj = CGX()
             %CGX Construct an instance of this class
             %   Detailed explanation goes here
-            obj.baudRate=9600;
+            obj.baudRate= 3000000;
         end
+        
+        function singlePacket = getSinglePacket(obj)
+            singlePacket=0;
+            lastByte = read(obj.serialPort, 1, "uint8");
+            while (lastByte ~= 255)
+                lastByte = read(obj.serialPort, 1, "uint8");
+                singlePacket= lastByte;
+            end
+            
+            
+            lastByte=0;
+            while (lastByte ~= 255)
+                lastByte = read(obj.serialPort, 1, "uint8");
+                singlePacket=[singlePacket, lastByte];
+            end
+            
+            
+            
+        end
+        
         
         function obj = findDongle(obj,comPort)
             if nargin == 2
-                obj.comPort = comPort
+                obj.comPort = comPort;
                 disp(['com port provided ' comPort]);
             else
                 disp(['No COM port provided, please disconnect your dongle' ...
