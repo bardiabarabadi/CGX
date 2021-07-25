@@ -38,7 +38,7 @@ list of the functions in the FTDI library by running the following command:
     loadlibrary('ftd2xx') % Loads the library
     libfunctions('ftd2xx') % Prints the available functions
 
-To call the functions in the library, you need to use **callib()** method. Note that 
+To call the functions in the library, you need to use **calllib()** method. Note that 
 you have to use the correct input and output variable types (pointers, int, double, ...)
 to get a successful execution, see ref [4] for more information on that. Below is
 and example:
