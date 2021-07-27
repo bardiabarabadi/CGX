@@ -1,0 +1,9 @@
+# depslib dependency file v1.0
+1627426781 source:c:\users\krigolsonlab\pycharmprojects\cgx\cpp\main.cpp
+	<iostream>
+	"ftd2xx.h"
+
+1625785712 c:\users\krigolsonlab\pycharmprojects\cgx\cpp\ftd2xx.h
+	<windows.h>
+	"WinTypes.h"
+
