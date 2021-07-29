@@ -2,6 +2,7 @@
 #include "ftd2xx.h"
 #include <windows.h>
 
+
 using namespace std;
 
 int main()
@@ -20,7 +21,7 @@ int main()
 
     //FT_DEVICE_LIST_INFO_NODE* ftdiDevList = new FT_DEVICE_LIST_INFO_NODE[numDevs];
 
-    ftStatus = FT_SetDivisor(ftHandle,0);
+    ftStatus = FT_SetDivisor(ftHandle,3);
     cout << ftStatus << endl;
     ftStatus = FT_SetFlowControl(ftHandle, FT_FLOW_RTS_CTS, 0x11, 0x13);
     cout << ftStatus << endl;
