@@ -16,9 +16,10 @@ to connect, configure and communicate with the FTDI chip on the dongle.
 ## Steps
 1. FTDI Driver
 2. MATLAB shared library
-3. Configure FT serial port
-4. Connect to CGX
-5. Decode CGX packets
+3. Configure FT serial port 
+4. Leaving MATLAB for Cpp 
+5. Connect to CGX
+6. Decode CGX packets
 ### Driver
 
 Installing the FTDI driver has two steps. First is using the windows executable 
@@ -58,7 +59,15 @@ and example:
 
 As note in "Bluetooth/FTDI Serial Port Interface" section of ref [1], the serial
 port operates at 3,000,000 baud, 8-N-1, with flow control enabled. This configuration 
-is not achievable without employing the FT driver library functions.
+is not achievable without employing the FT driver library functions. The driver for the 
+FTDI virtual com port allows for baudrates to a max of 920K, which is not useful here.
+
+### Leaving MATLAB for Cpp
+As you can see in the examples above, using the shared libraries in MATLAB are difficult to code
+inefficient to execute, and generally not a good idea! The solution is to load up the FTDI library
+in C/C++ programming language (which it is designed to work with). This section describes how this is done.
+
+
 
     
     
