@@ -24,7 +24,7 @@ classdef cCGX
                 obj.rawBuff(obj.currentPointer:obj.currentPointer+size(newSamples, 2)-1) = newSamples;
                 obj.currentPointer=obj.currentPointer+size(newSamples, 2);
             else
-                disp ("overflow occured, something is wrong");
+                disp ("overflow occured, something is wrong. Use resetBuff() to start over.");
             end
         end
         
@@ -34,10 +34,62 @@ classdef cCGX
             obj.currentPointer = 1;
         end
         
-        function [obj, rawPackets] = readRawPacketsAndClear(obj)
+        function [obj, eegArray, lossRate] = pullEEG(obj) % This function returns EEG samples and cleares the buff
+            
+            [obj, sampleArray, lossRate] = obj.refreshGetSampleArray;
+            obj=obj.resetBuff();
+            if ~isempty(sampleArray)
+                eegArray = sampleArray(:,1:8)*3.88051e-10;
+            else
+                eegArray=[];
+            end
+        end
+        
+        function [obj, sampleArray, lossRate] = refreshGetSampleArray(obj)
+            obj=obj.refresh();
+            [sampleArray, lossRate] = obj.getSampleArray();
+        end
+        
+        function [sampleArray, lossRate] = getSampleArray(obj)
+            [packetArray, lossRate] = obj.getPacketArray();
+            packetCell=num2cell(packetArray,2);
+            sampleCell=cellfun(@decodeCgxPacket, packetCell, 'UniformOutput', false);
+            sampleArray=cell2mat(sampleCell);
+        end
+        
+        function [obj, packetArray, lossRate] = refreshGetPacketArray(obj)
+            obj=obj.refresh();
+            [packetArray, lossRate] = obj.getPacketArray();
+        end
+        function [packetArray, lossRate] = getPacketArray(obj)
+            
+            rawPacketsStr = obj.readRawPacketsStr();
+            rawPacketsStrSplitted=split(rawPacketsStr, char(255));
+            rawPacketStrCleaned=...
+                rawPacketsStrSplitted(strlength(rawPacketsStrSplitted)==38);
+            lossRate = (size(rawPacketsStrSplitted,1)-...
+                size(rawPacketStrCleaned,1))/size(rawPacketsStrSplitted,1);
+            packetArray=uint8(char(rawPacketStrCleaned));
+            
+        end
+        
+        function [rawPackets] = readRawPackets(obj)
             % This function reads all the packets from the TCP and returns
             % them as is. 
             rawPackets = obj.rawBuff(1:obj.currentPointer);
+        end
+        
+        function [rawPacketsStr] = readRawPacketsStr(obj)
+            % This function reads all the packets from the TCP and returns
+            % them as is. 
+            rawPackets = obj.rawBuff(1:obj.currentPointer);
+            rawPacketsStr = string(char(rawPackets));
+        end
+        
+        function [obj, rawPackets] = readRawPacketsAndClear(obj)
+            % This function reads all the packets from the TCP and returns
+            % them as is. 
+            rawPackets = obj.readRawPackets();
             obj=obj.resetBuff();
         end
         
