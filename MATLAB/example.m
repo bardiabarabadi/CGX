@@ -6,11 +6,11 @@ figure
 dialogBox = uicontrol('Style', 'PushButton', 'String', 'Break','Callback', 'delete(gcbf)');
 
 
-refreshRate = 0.1; % refresh rate, in seconds
+refreshRate = 0.3; % refresh rate, in seconds
 
 device=cCGX(refreshRate);
 
-display_arr = zeros ([8,1000]);
+display_arr = zeros ([8,6000]);
 
 A = zeros([6,1]);
 prv_A = 0;
@@ -53,7 +53,7 @@ while (ishandle(dialogBox))
     newSamplesCount = size(A, 1);
     display_arr(:,1:end-newSamplesCount) = display_arr(:,1+newSamplesCount:end);
     display_arr(:,end+1-newSamplesCount:end) = A';
-        
+    %disp(l);
     send(D, display_arr);
 end
 device.kill();
