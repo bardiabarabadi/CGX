@@ -8,14 +8,32 @@ classdef cCGX
         rawBuff
         currentPointer
         maxBuffLen
+        refreshRate
+        process
     end
     
     methods
-        function obj = cCGX()
+        function obj = cCGX(refreshRate)
+            obj=obj.startExe();
             obj.port = 25565;
             obj.tcpClient = tcpclient("localhost", obj.port);
-            obj=obj.resetBuff();
+            obj.resetBuff();
+            write (obj.tcpClient, (refreshRate));
         end
+        
+        function obj=startExe(obj)
+            obj.process = System.Diagnostics.Process();
+            obj.process.StartInfo.FileName = 'Cpp.exe';
+            obj.process.StartInfo.UseShellExecute = true;
+            obj.process.StartInfo.RedirectStandardInput = false;
+            obj.process.StartInfo.CreateNoWindow = true;
+            obj.process.Start();
+        end
+        
+        function kill(obj)
+            obj.process.Kill();
+        end
+        
         
         function obj = refresh(obj)
             % This functions moves data from C to MATLAB

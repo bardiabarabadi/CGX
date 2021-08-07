@@ -12,7 +12,6 @@
 // #pragma comment (lib, "Mswsock.lib")
 
 
-#define FETCH_INTERVAL_SEC 0.01
 #define DEFAULT_BUFLEN 512
 #define DEFAULT_PORT 25565
 
@@ -27,6 +26,7 @@ int main()
     FT_HANDLE ftHandle;
     long int comPort;
     byte* t_data = new byte[10000000];
+    int capturedBytes = 0;
     unsigned long int allBytesRead = 0;
 
     WSADATA wsa;
@@ -112,14 +112,19 @@ int main()
     byte* herePointer = t_data;
     exit=false;
     cout << "Streaming raw data on TCP channel, \'localhost\', port: " << DEFAULT_PORT << endl;
-    cout << "Press Esc to terminate...";
+    cout << "Press Esc to terminate..." << endl;
+
+    double refrate = 0;
+
+    capturedBytes = recv(new_socket, (char*)&refrate, sizeof(double), 0);
+    cout << capturedBytes << ", " << refrate << endl;
     while (exit==false) {
 
         if (GetAsyncKeyState(VK_ESCAPE))
         {
             exit = true;
         }
-        usleep(FETCH_INTERVAL_SEC*1000000);
+        usleep(refrate*1000000);
 
         FT_GetStatus(ftHandle,&RxBytes,&TxBytes,&EventDWord);
         ftStatus = FT_Read(ftHandle, herePointer, RxBytes, &bytesRead);
@@ -129,6 +134,7 @@ int main()
         //cout << endl << RxBytes << ", " << TxBytes << ", " << EventDWord << endl;
         byte* herePointer = t_data; // Clear buffer
         allBytesRead += bytesRead;
+
     }
 
 

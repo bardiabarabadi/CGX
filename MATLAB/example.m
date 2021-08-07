@@ -6,15 +6,9 @@ figure
 dialogBox = uicontrol('Style', 'PushButton', 'String', 'Break','Callback', 'delete(gcbf)');
 
 
-process = System.Diagnostics.Process();
-process.StartInfo.FileName = 'Cpp.exe';
-process.StartInfo.UseShellExecute = true;
-process.StartInfo.RedirectStandardInput = false;
-process.StartInfo.CreateNoWindow = true;
-process.Start();
-processisrunning = ~process.HasExited;
+refreshRate = 0.1; % refresh rate, in seconds
 
-device=cCGX();
+device=cCGX(refreshRate);
 
 display_arr = zeros ([8,1000]);
 
@@ -54,21 +48,14 @@ device=device.resetBuff();
 
 while (ishandle(dialogBox))
     
+    pause(refreshRate)
     [device, A, l] = device.pullEEG();
     newSamplesCount = size(A, 1);
     display_arr(:,1:end-newSamplesCount) = display_arr(:,1+newSamplesCount:end);
     display_arr(:,end+1-newSamplesCount:end) = A';
         
     send(D, display_arr);
-        
-        
-        
-        
-    pause(0.03)
-  
-
 end
-process.Kill();
-disp ('Done')
+device.kill();
 
 
