@@ -59,18 +59,38 @@ classdef cCGX
             obj.sendValue(18);
         end
         
+        function recoveredEEG = recoverEEG (eegArr)
+            b1=[0.85, 0, 0.85];
+            a1=[0.7,0,1];
+            y1=filter(b1,a1,eegArr);
+            
+            b2=[0.8,0.8];
+            a2=[0.6,1];
+            y2=filter(b2,a2,y1);
+            
+            recoveredEEG = y2;
+        end
+        
         function obj = resetBuff(obj)
             obj.maxBuffLen=10000000;
             obj.rawBuff=zeros([1,obj.maxBuffLen], 'uint8');
             obj.currentPointer = 1;
         end
         
-        function [obj, eegArray, lossRate] = pullEEG(obj) % This function returns EEG samples and cleares the buff
+        function [obj, eegArray, lossRate] = pullEEG(obj, doRecover) % This function returns EEG samples and cleares the buff
+            if nargin < 2
+                doRecover = 0;
+            end
             
             [obj, sampleArray, lossRate] = obj.refreshGetSampleArray;
             obj=obj.resetBuff();
             if ~isempty(sampleArray)
-                eegArray = sampleArray(:,1:8)*3.88051e-10;
+                eegArray_tmp = sampleArray(:,1:8)*3.88051e-10;
+                if doRecover ~= 0
+                    eegArray = recoverEEG(eegArray_tmp);
+                else
+                    eegArray = eegArray_tmp;
+                end
             else
                 eegArray=[];
             end
