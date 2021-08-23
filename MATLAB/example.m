@@ -10,7 +10,7 @@ refreshRate = 0.3; % refresh rate, in seconds
 
 device=cCGX(refreshRate);
 
-display_arr = zeros ([8,1000]);
+display_arr = zeros ([8,4000]);
 
 A = zeros([6,1]);
 prv_A = 0;
@@ -49,7 +49,16 @@ device=device.resetBuff();
 while (ishandle(dialogBox))
     
     pause(refreshRate)
-    [device, A, l] = device.pullEEG(0);
+    
+    % With impedance check and removal
+    device.enableImpedanceCheck()
+    [device, A, l] = device.pullEEG(1);
+    
+    
+    % Without impedance check and removal
+    % device.disableImpedanceCheck()
+    % [device, A, l] = device.pullEEG(0);
+    
     newSamplesCount = size(A, 1);
     display_arr(:,1:end-newSamplesCount) = display_arr(:,1+newSamplesCount:end);
     display_arr(:,end+1-newSamplesCount:end) = A';

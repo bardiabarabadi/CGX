@@ -10,6 +10,8 @@ classdef cCGX
         maxBuffLen
         refreshRate
         process
+        z1
+        z2
     end
     
     methods
@@ -18,6 +20,8 @@ classdef cCGX
             obj.port = 25565;
             obj.tcpClient = tcpclient("localhost", obj.port);
             obj.resetBuff();
+            obj.z1=[];
+            obj.z2=[];
             write (obj.tcpClient, (refreshRate));
         end
         
@@ -59,17 +63,7 @@ classdef cCGX
             obj.sendValue(18);
         end
         
-        function recoveredEEG = recoverEEG (eegArr)
-            b1=[0.85, 0, 0.85];
-            a1=[0.7,0,1];
-            y1=filter(b1,a1,eegArr);
-            
-            b2=[0.8,0.8];
-            a2=[0.6,1];
-            y2=filter(b2,a2,y1);
-            
-            recoveredEEG = y2;
-        end
+      
         
         function obj = resetBuff(obj)
             obj.maxBuffLen=10000000;
@@ -87,7 +81,7 @@ classdef cCGX
             if ~isempty(sampleArray)
                 eegArray_tmp = sampleArray(:,1:8)*3.88051e-10;
                 if doRecover ~= 0
-                    eegArray = recoverEEG(eegArray_tmp);
+                    [obj.z1, obj.z2, eegArray] = recoverEEG(eegArray_tmp,obj.z1, obj.z2);
                 else
                     eegArray = eegArray_tmp;
                 end
