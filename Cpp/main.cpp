@@ -26,7 +26,10 @@ int main()
     FT_HANDLE ftHandle;
     long int comPort;
     byte* t_data = new byte[10000000];
+    byte* commandBuff = new byte[1000];
+    int recievedCommands = 0;
     int capturedBytes = 0;
+    DWORD sentCommands = 0;
     unsigned long int allBytesRead = 0;
 
     WSADATA wsa;
@@ -77,6 +80,8 @@ int main()
     {
         printf("accept failed with error code : %d" , WSAGetLastError());
     }
+    u_long mode = 1;  // 1 to enable non-blocking socket
+    ioctlsocket(new_socket, FIONBIO, &mode);
 
     puts("Connection accepted");
 
@@ -116,8 +121,11 @@ int main()
 
     double refrate = 0;
 
-    capturedBytes = recv(new_socket, (char*)&refrate, sizeof(double), 0);
-    cout << capturedBytes << ", " << refrate << endl;
+    while (refrate == 0){
+        capturedBytes = recv(new_socket, (char*)&refrate, sizeof(double), 0);
+        cout << capturedBytes << ", " << refrate << endl;
+        usleep(10000);
+    }
     while (exit==false) {
 
         if (GetAsyncKeyState(VK_ESCAPE))
@@ -134,7 +142,16 @@ int main()
         //cout << endl << RxBytes << ", " << TxBytes << ", " << EventDWord << endl;
         byte* herePointer = t_data; // Clear buffer
         allBytesRead += bytesRead;
-
+        recievedCommands = recv(new_socket,(char*) commandBuff, sizeof(commandBuff), 0);
+        if (recievedCommands > 0){
+            FT_Write(ftHandle, (char*)commandBuff, recievedCommands, &sentCommands);
+            cout << "Sending " << (char)commandBuff[0] << " to the device";
+            if (sentCommands != recievedCommands){
+                cout << "Could/'nt send all commads. stopping the program...";
+                break;
+            }
+            recievedCommands = 0;
+        }
     }
 
 
@@ -154,76 +171,3 @@ int main()
 }
 
 
-
-int main_(){
-    cout << "Hi!!!\n";
-
-    WSADATA wsa;
-    SOCKET s , new_socket;
-    struct sockaddr_in server , client;
-    int c;
-    char message [100];
-
-    printf("\nInitialising Winsock...");
-    if (WSAStartup(MAKEWORD(2,2),&wsa) != 0)
-    {
-        printf("Failed. Error Code : %d",WSAGetLastError());
-        return 1;
-    }
-
-    printf("Initialised.\n");
-
-    //Create a socket
-    if((s = socket(AF_INET , SOCK_STREAM , 0 )) == INVALID_SOCKET)
-    {
-        printf("Could not create socket : %d" , WSAGetLastError());
-    }
-
-    printf("Socket created.\n");
-
-    //Prepare the sockaddr_in structure
-    server.sin_family = AF_INET;
-    server.sin_addr.s_addr = INADDR_ANY;
-    server.sin_port = htons( DEFAULT_PORT );
-
-    //Bind
-    if( bind(s ,(struct sockaddr *)&server , sizeof(server)) == SOCKET_ERROR)
-    {
-        printf("Bind failed with error code : %d" , WSAGetLastError());
-    }
-
-    puts("Bind done");
-
-    //Listen to incoming connections
-    listen(s , 3);
-
-    //Accept and incoming connection
-    puts("Waiting for incoming connections...");
-
-    c = sizeof(struct sockaddr_in);
-    new_socket = accept(s , (struct sockaddr *)&client, &c);
-    if (new_socket == INVALID_SOCKET)
-    {
-        printf("accept failed with error code : %d" , WSAGetLastError());
-    }
-
-    puts("Connection accepted");
-
-    //Reply to client
-    message[0] = 100;
-    message[1] = 200;
-    message[2] = 10;
-    message[3] = 20;
-    message[4] = 30;
-    message[5] = 40;
-    message[6] = 50;
-
-    send(new_socket , message , 6 , 0);
-
-    getchar();
-
-    closesocket(s);
-    WSACleanup();
-
-    return 0;
-}

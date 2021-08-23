@@ -46,6 +46,19 @@ classdef cCGX
             end
         end
         
+        function sendValue(obj, toSend)
+            toSendByte = uint8(toSend);
+            write(obj.tcpClient, toSendByte);
+        end
+        
+        function enableImpedanceCheck(obj)
+            obj.sendValue(17);
+        end
+        
+        function disableImpedanceCheck(obj)
+            obj.sendValue(18);
+        end
+        
         function obj = resetBuff(obj)
             obj.maxBuffLen=10000000;
             obj.rawBuff=zeros([1,obj.maxBuffLen], 'uint8');
