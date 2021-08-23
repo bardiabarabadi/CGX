@@ -21,7 +21,6 @@ int main()
 {
     bool exit = false;
 
-
     FT_STATUS ftStatus;
     FT_HANDLE ftHandle;
     long int comPort;
@@ -153,12 +152,6 @@ int main()
             recievedCommands = 0;
         }
     }
-
-
-    //for (int j=0; j<allBytesRead; j++) {
-    //        cout << +(uint8_t)(t_data[j]) << " ";
-    //      if (t_data[j]==255) cout << endl;
-    //}
 
     cout << "Press any key to close the socket and end the program..." << endl;
     getchar();
