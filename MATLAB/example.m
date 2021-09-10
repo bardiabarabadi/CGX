@@ -46,18 +46,19 @@ D = parallel.pool.DataQueue;
 D.afterEach(@(display_arr) updateSurface(pl_1, pl_2, pl_3, pl_4, pl_5, pl_6, pl_7, pl_8, display_arr));
 device=device.resetBuff();
 
+%device.enableImpedanceCheck()
+% Without impedance check and removal
+device.disableImpedanceCheck()
+
 while (ishandle(dialogBox))
     
     pause(refreshRate)
     
     % With impedance check and removal
-    device.enableImpedanceCheck()
-    [device, A, l] = device.pullEEG(1);
+    % [device, A, l] = device.pullEEG(1);
     
     
-    % Without impedance check and removal
-    % device.disableImpedanceCheck()
-    % [device, A, l] = device.pullEEG(0);
+    [device, A, l] = device.pullEEG(0);
     
     newSamplesCount = size(A, 1);
     display_arr(:,1:end-newSamplesCount) = display_arr(:,1+newSamplesCount:end);
