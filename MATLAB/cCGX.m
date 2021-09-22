@@ -31,7 +31,7 @@ classdef cCGX
             obj.process.StartInfo.UseShellExecute = true;
             obj.process.StartInfo.RedirectStandardInput = false;
             obj.process.StartInfo.CreateNoWindow = true;
-            obj.process.Start();
+            obj.process.Start('Cpp.exe');
         end
         
         function kill(obj)
