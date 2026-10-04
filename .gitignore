@@ -1,0 +1,21 @@
+# IDE
+.idea/
+
+# Code::Blocks build output
+Cpp/bin/
+Cpp/obj/
+*.o
+*.depend
+*.layout
+
+# FTDI D2XX driver package (download from FTDI, do not commit)
+Cpp/amd64/
+Cpp/i386/
+Cpp/Static/
+Cpp/ftd2xx.h
+Cpp/*.cat
+Cpp/*.inf
+
+# MATLAB
+*.asv
+*.m~

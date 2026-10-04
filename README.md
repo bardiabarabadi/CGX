@@ -1,4 +1,7 @@
 # CGX on MATLAB
+
+> **Status: unmaintained.** This repository is kept for reference and is no longer developed. It was an early approach to reading the CGX dev-kit from MATLAB over the FTDI dongle, later replaced by a host application built on the official CGX Windows SDK.
+
 MATLAB guide for using CGX with FTDI dongle:
 
 ## Requirements
@@ -54,6 +57,12 @@ Notes:
   
 To see an example, open and run **example.m** to see EEG samples in real-time (in Volts). To get more detail on how this works, read the README.md file in the **docs** directory.
 
+
+### Building the C++ bridge
+
+`MATLAB/Cpp.exe` is a prebuilt copy of the bridge in `Cpp/main.cpp`, which reads the dongle through FTDI's D2XX library and forwards the data to MATLAB over TCP. You only need to rebuild it if you change `main.cpp`.
+
+The FTDI D2XX driver package is not included in this repository. To build, download the Windows D2XX package from FTDI (ref [3]) and copy `ftd2xx.h` and the `amd64` folder into `Cpp/`; the Code::Blocks project links against `amd64/ftd2xx.lib`. The code in `MATLAB-deprecated/` is an older attempt and is not maintained.
 
 ## Refrences
 1. [CGX Wiki](http://cognionics.com/wiki/pmwiki.php/Main/CognionicsRawDataSpec#Bluetooth.2FFTDI_Serial_Port_Interface)
